@@ -63,12 +63,21 @@ static void parse_DIMACS_main(B& in, Solver& S, bool strictp = false) {
             }else{
                 printf("PARSE ERROR! Unexpected char: %c\n", *in), exit(3);
             }
-        } else if (*in == 'c' || *in == 'p')
+        } else if (*in == 'c' || *in == 'p'){
             skipLine(in);
-        else{
+        } else if (*in == 'b'){
+            eagerMatch(in, "b");
+            int branch_var = parseInt(in);
+            if (branch_var <= 0 || parseInt(in) != 0) {
+                printf("PARSE ERROR! Use exactly one variable for branch oreder per line\n");
+                exit(3);
+            }
+            S.addBranch(branch_var);
+        } else{
             cnt++;
             readClause(in, S, lits);
-            S.addClause_(lits); }
+            S.addClause_(lits);
+        }
     }
     if (strictp && cnt != clauses)
         printf("PARSE ERROR! DIMACS header mismatch: wrong number of clauses\n");

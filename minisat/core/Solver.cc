@@ -180,6 +180,13 @@ bool Solver::addClause_(vec<Lit>& ps)
     return true;
 }
 
+void Solver::addBranch(int var)
+{
+    assert(decisionLevel() == 0);
+    assert(ok);
+
+    branch_vars.push(var);
+}
 
 void Solver::attachClause(CRef cr){
     const Clause& c = ca[cr];
@@ -250,8 +257,16 @@ Lit Solver::pickBranchLit()
 {
     Var next = var_Undef;
 
+    // TODO keep track of first unassigned variable to make this faster
+    for (int i = decisionLevel(); i < branch_vars.size(); i++) {
+        if (value(branch_vars[i]) == l_Undef && decision[branch_vars[i]]) {
+            next = branch_vars[i];
+            break;
+        }
+    }
+
     // Random decision:
-    if (drand(random_seed) < random_var_freq && !order_heap.empty()){
+    if (next == var_Undef && drand(random_seed) < random_var_freq && !order_heap.empty()){
         next = order_heap[irand(random_seed,order_heap.size())];
         if (value(next) == l_Undef && decision[next])
             rnd_decisions++; }

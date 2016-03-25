@@ -55,6 +55,8 @@ public:
     bool    addClause (Lit p, Lit q, Lit r, Lit s);             // Add a quaternary clause to the solver. 
     bool    addClause_(      vec<Lit>& ps);                     // Add a clause to the solver without making superflous internal copy. Will
                                                                 // change the passed vector 'ps'.
+    void    addBranch (int var);
+
 
     // Solving:
     //
@@ -217,6 +219,8 @@ protected:
 
     vec<Var>            released_vars;
     vec<Var>            free_vars;
+
+    vec<Var>            branch_vars;
 
     // Temporaries (to reduce allocation overhead). Each variable is prefixed by the method in which it is
     // used, exept 'seen' wich is used in several places.
